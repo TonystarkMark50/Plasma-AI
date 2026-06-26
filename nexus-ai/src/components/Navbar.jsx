@@ -23,7 +23,7 @@ export default function Navbar() {
           <Cube16Solid className="w-7 h-7 text-forsythia" />
           <span className="font-display text-lg font-bold tracking-tight">
             <span className="text-forsythia">PLASMA</span>
-            <span className="text-arctic-powder">AI</span>
+            <span className="text-arctic-powder"> AI</span>
           </span>
         </a>
 

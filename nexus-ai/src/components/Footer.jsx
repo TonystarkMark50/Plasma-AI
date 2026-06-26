@@ -14,7 +14,7 @@ export default function Footer() {
             <Cube16Solid className="w-6 h-6 text-forsythia" />
             <span className="font-display text-base font-bold">
               <span className="text-forsythia">PLASMA</span>
-              <span className="text-arctic-powder">AI</span>
+              <span className="text-arctic-powder"> AI</span>
             </span>
           </a>
           <p className="text-sm text-mystic-mint/60 leading-relaxed mb-4">
