@@ -9,4 +9,15 @@ export default defineConfig({
     strictPort: true,
     allowedHosts: true,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three'],
+          drei: ['@react-three/drei'],
+          fiber: ['@react-three/fiber'],
+        },
+      },
+    },
+  },
 });

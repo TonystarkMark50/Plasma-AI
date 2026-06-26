@@ -1,400 +1,312 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 
-/* ─── Injected keyframe animations ───────────────────────────────── */
-const KEYFRAMES = `
-@keyframes holo-float   { 0%,100%{transform:translateY(0) rotateX(0)} 50%{transform:translateY(-10px) rotateX(1.5deg)} }
-@keyframes orb-pulse    { 0%,100%{opacity:.55;transform:scale(1)} 50%{opacity:1;transform:scale(1.1)} }
-@keyframes ring-cw      { to{transform:rotate(360deg)} }
-@keyframes ring-ccw     { to{transform:rotate(-360deg)} }
-@keyframes scan-line    { 0%{top:0%;opacity:0} 8%{opacity:.5} 92%{opacity:.35} 100%{top:100%;opacity:0} }
-@keyframes dot-pulse    { 0%,100%{opacity:1;box-shadow:0 0 5px currentColor} 50%{opacity:.5;box-shadow:0 0 12px currentColor} }
-@keyframes packet-flow  { 0%{left:-4%;opacity:0} 5%{opacity:1} 95%{opacity:1} 100%{left:104%;opacity:0} }
-@keyframes node-ping    { 0%{transform:scale(1);opacity:.8} 100%{transform:scale(2.6);opacity:0} }
-@keyframes bar-rise     { from{transform:scaleY(0)} }
-@keyframes num-tick     { from{opacity:.3} to{opacity:1} }
-@keyframes border-glow  { 0%,100%{border-color:rgba(0,229,255,.12)} 50%{border-color:rgba(0,229,255,.32)} }
-@keyframes wave-move    { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+/* ─── CSS Keyframes ──────────────────────────────────────────────────── */
+const KFID = 'ai-factory-kf';
+const KF = `
+@keyframes aif-0{0%,100%{transform:translateY(0px)}   50%{transform:translateY(-6px)}}
+@keyframes aif-1{0%,100%{transform:translateY(-3px)}  50%{transform:translateY( 5px)}}
+@keyframes aif-2{0%,100%{transform:translateY( 2px)}  50%{transform:translateY(-5px)}}
+@keyframes aif-3{0%,100%{transform:translateY(-5px)}  50%{transform:translateY( 5px)}}
+@keyframes aif-4{0%,100%{transform:translateY( 1px)}  50%{transform:translateY(-5px)}}
+@keyframes aif-5{0%,100%{transform:translateY( 4px)}  50%{transform:translateY(-4px)}}
+@keyframes aif-6{0%,100%{transform:translateY(-2px)}  50%{transform:translateY( 4px)}}
+@keyframes aif-ping  {0%{transform:scale(1);opacity:.7}  100%{transform:scale(2.9);opacity:0}}
+@keyframes aif-scan  {0%{top:-1%;opacity:0} 8%{opacity:.32} 92%{opacity:.18} 100%{top:101%;opacity:0}}
+@keyframes aif-spin  {to{transform:rotate(360deg)}}
+@keyframes aif-pulse {0%,100%{opacity:.65;box-shadow:0 0 4px currentColor} 50%{opacity:1;box-shadow:0 0 11px currentColor}}
+@keyframes aif-bar   {from{width:0}}
 `;
 
-/* ─── Glass panel style ───────────────────────────────────────────── */
-const glass = (extra = {}) => ({
-  background:    'rgba(8,16,31,0.62)',
-  backdropFilter:'blur(14px) saturate(1.4)',
-  WebkitBackdropFilter:'blur(14px) saturate(1.4)',
-  border:        '1px solid rgba(0,229,255,0.15)',
-  borderRadius:  12,
-  padding:       '10px 13px',
-  animation:     'border-glow 4s ease-in-out infinite',
-  position:      'relative',
-  overflow:      'hidden',
-  ...extra,
-});
+/* ─── Data ────────────────────────────────────────────────────────────── */
+const NODES = [
+  { id:0, label:'REQUEST',     sub:'User Input',     px:.500, py:.065, color:'#00E5FF' },
+  { id:1, label:'REASONING',   sub:'LLM Agent',      px:.165, py:.285, color:'#3B82F6' },
+  { id:2, label:'DATA FETCH',  sub:'RAG + Search',   px:.835, py:.285, color:'#A855F7' },
+  { id:3, label:'ANALYSIS',    sub:'Core Engine',    px:.500, py:.500, color:'#8B5CF6', hub:true },
+  { id:4, label:'DECISION',    sub:'Policy Engine',  px:.165, py:.715, color:'#6366F1' },
+  { id:5, label:'AUTOMATION',  sub:'Action Engine',  px:.835, py:.715, color:'#10B981' },
+  { id:6, label:'REPORTING',   sub:'Output Layer',   px:.500, py:.895, color:'#F59E0B' },
+];
+const EDGES = [
+  {s:0,e:1},{s:0,e:2},
+  {s:1,e:3},{s:2,e:3},
+  {s:3,e:4},{s:3,e:5},
+  {s:4,e:6},{s:5,e:6},
+];
 
-/* ─── Scan-line overlay ───────────────────────────────────────────── */
-function ScanLine({ duration = '3.2s', delay = '0s' }) {
+/* ─── Helpers ────────────────────────────────────────────────────────── */
+function ha(hex, a) {
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+function cp(ax,ay,bx,by,W,H){
+  const mx=(ax+bx)/2, my=(ay+by)/2;
+  const dx=mx-W*.5, dy=my-H*.5;
+  const len=Math.hypot(dx,dy)||1;
+  const push=Math.min(W,H)*.12;
+  return { cpx:mx+dx/len*push, cpy:my+dy/len*push };
+}
+function bpt(ax,ay,cpx,cpy,bx,by,t){
+  const mt=1-t;
+  return { x:mt*mt*ax+2*mt*t*cpx+t*t*bx, y:mt*mt*ay+2*mt*t*cpy+t*t*by };
+}
+
+/* ─── Canvas layer ───────────────────────────────────────────────────── */
+function SceneCanvas() {
+  const cvs = useRef(null);
+  const pkts = useRef(
+    EDGES.flatMap((e,i) =>
+      [0, .34, .67].map(off => ({ ei:i, t:off, spd:.0011+(i%4)*.0003 }))
+    )
+  );
+  const stars = useRef(
+    Array.from({length:80}, () => ({
+      x:Math.random(), y:Math.random(),
+      r:Math.random()*.75+.25, vy:(Math.random()*.04+.01)*1e-4,
+    }))
+  );
+
+  useEffect(() => {
+    const c = cvs.current; if (!c) return;
+    const ctx = c.getContext('2d');
+    let raf;
+    const resize = () => { c.width=c.offsetWidth; c.height=c.offsetHeight; };
+    resize();
+    const ro = new ResizeObserver(resize); ro.observe(c);
+    let prev = performance.now();
+
+    const draw = now => {
+      raf = requestAnimationFrame(draw);
+      const dt = Math.min(now-prev,32); prev=now;
+      const W=c.width, H=c.height;
+      ctx.clearRect(0,0,W,H);
+
+      /* Background */
+      const bg = ctx.createRadialGradient(W*.5,H*.44,0,W*.5,H*.44,W*.76);
+      bg.addColorStop(0,'rgba(18,10,44,1)');
+      bg.addColorStop(1,'rgba(4,6,20,1)');
+      ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+      /* Hub volumetric glow */
+      const hx=NODES[3].px*W, hy=NODES[3].py*H;
+      const hg=ctx.createRadialGradient(hx,hy,0,hx,hy,W*.42);
+      hg.addColorStop(0,'rgba(139,92,246,.14)');
+      hg.addColorStop(1,'rgba(139,92,246,0)');
+      ctx.fillStyle=hg; ctx.fillRect(0,0,W,H);
+
+      /* Stars */
+      stars.current.forEach(s => {
+        s.y += s.vy*dt; if(s.y>1) s.y=0;
+        ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
+        ctx.fillStyle='rgba(200,220,255,.22)'; ctx.fill();
+      });
+
+      const pos = NODES.map(n=>({x:n.px*W,y:n.py*H}));
+
+      /* Per-node ambient halo */
+      NODES.forEach((n,i) => {
+        const p=pos[i], r=(n.hub?W*.18:W*.13);
+        const ng=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r);
+        ng.addColorStop(0,ha(n.color,.07)); ng.addColorStop(1,ha(n.color,0));
+        ctx.fillStyle=ng; ctx.fillRect(0,0,W,H);
+      });
+
+      /* Edges */
+      EDGES.forEach(e => {
+        const a=pos[e.s], b=pos[e.e];
+        const {cpx,cpy}=cp(a.x,a.y,b.x,b.y,W,H);
+        const col=NODES[e.s].color;
+        ctx.save();
+        ctx.shadowColor=col; ctx.shadowBlur=12;
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.quadraticCurveTo(cpx,cpy,b.x,b.y);
+        ctx.strokeStyle=ha(col,.24); ctx.lineWidth=2.5; ctx.stroke();
+        ctx.restore();
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.quadraticCurveTo(cpx,cpy,b.x,b.y);
+        ctx.strokeStyle=ha(col,.55); ctx.lineWidth=.85; ctx.stroke();
+      });
+
+      /* Data packets */
+      pkts.current.forEach(p => {
+        p.t += p.spd*(dt/16); if(p.t>=1) p.t-=1;
+        const e=EDGES[p.ei];
+        const a=pos[e.s], b=pos[e.e];
+        const {cpx,cpy}=cp(a.x,a.y,b.x,b.y,W,H);
+        const pt=bpt(a.x,a.y,cpx,cpy,b.x,b.y,p.t);
+        const col=NODES[e.s].color;
+        const alpha=Math.sin(p.t*Math.PI);
+        const pr=W*.019;
+        const pg=ctx.createRadialGradient(pt.x,pt.y,0,pt.x,pt.y,pr);
+        pg.addColorStop(0,ha(col,alpha)); pg.addColorStop(1,ha(col,0));
+        ctx.beginPath(); ctx.arc(pt.x,pt.y,pr,0,Math.PI*2);
+        ctx.fillStyle=pg; ctx.fill();
+        ctx.beginPath(); ctx.arc(pt.x,pt.y,pr*.28,0,Math.PI*2);
+        ctx.fillStyle=`rgba(255,255,255,${alpha*.85})`; ctx.fill();
+      });
+
+      /* Node rings */
+      NODES.forEach((n,i) => {
+        const p=pos[i], r=(n.hub?W*.056:W*.038);
+        ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2);
+        ctx.strokeStyle=ha(n.color,.5); ctx.lineWidth=1; ctx.stroke();
+        if(n.hub){
+          ctx.beginPath(); ctx.arc(p.x,p.y,r*1.55,0,Math.PI*2);
+          ctx.strokeStyle=ha(n.color,.14); ctx.lineWidth=.6; ctx.stroke();
+        }
+      });
+    };
+
+    raf=requestAnimationFrame(draw);
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); };
+  }, []);
+
+  return (
+    <canvas ref={cvs} aria-hidden="true"
+      style={{ position:'absolute', inset:0, width:'100%', height:'100%', display:'block' }} />
+  );
+}
+
+/* ─── Glassmorphic node card ─────────────────────────────────────────── */
+function NodeCard({ node, tilt }) {
+  const isHub = node.hub;
+  const w = isHub ? 132 : 108;
   return (
     <div style={{
-      position:'absolute', left:0, right:0, height:2,
-      background:'linear-gradient(90deg,transparent,rgba(0,229,255,.45),transparent)',
-      animation:`scan-line ${duration} linear ${delay} infinite`,
-      pointerEvents:'none', zIndex:10,
-    }} />
-  );
-}
-
-/* ─── Status dot ──────────────────────────────────────────────────── */
-function Dot({ color, delay = '0s' }) {
-  return (
-    <span style={{
-      display:'inline-block', width:7, height:7, borderRadius:'50%',
-      background:color, color,
-      animation:`dot-pulse 1.8s ease-in-out ${delay} infinite`, flexShrink:0,
-    }} />
-  );
-}
-
-/* ─── Central AI Orb ──────────────────────────────────────────────── */
-function AIOrb() {
-  const rings = [
-    { sz:100, brd:'rgba(0,229,255,.22)', spd:'6s', dir:'ring-cw'  },
-    { sz:80,  brd:'rgba(168,85,247,.28)', spd:'9s', dir:'ring-ccw' },
-    { sz:60,  brd:'rgba(255,200,1,.22)', spd:'13s', dir:'ring-cw' },
-  ];
-  return (
-    <div style={{ position:'relative', width:120, height:120, margin:'0 auto' }}>
-      {/* Glow halo */}
+      position:'absolute',
+      left:`${node.px*100}%`, top:`${node.py*100}%`,
+      transform:`translate(-50%,-50%) translateX(${tilt.x*.45}px) translateY(${tilt.y*.35}px)`,
+      width:w,
+      background:'rgba(5,7,22,0.84)',
+      backdropFilter:'blur(14px) saturate(1.4)',
+      WebkitBackdropFilter:'blur(14px) saturate(1.4)',
+      border:`1px solid ${ha(node.color,.3)}`,
+      borderRadius:isHub?13:10,
+      padding:isHub?'11px 14px':'7px 11px',
+      boxShadow:`0 0 28px ${ha(node.color,.11)},inset 0 1px 0 rgba(255,255,255,.07)`,
+      animation:`aif-${node.id} ${4.2+node.id*.65}s ease-in-out infinite`,
+      overflow:'hidden',
+      zIndex:2,
+      transition:'transform .1s ease-out',
+    }}>
+      {/* Horizontal scan line */}
+      <div aria-hidden="true" style={{
+        position:'absolute', left:0, right:0, height:1,
+        background:`linear-gradient(90deg,transparent,${ha(node.color,.52)},transparent)`,
+        animation:`aif-scan ${3.2+node.id*.42}s linear ${node.id*.28}s infinite`,
+        pointerEvents:'none',
+      }}/>
+      {/* Corner bracket TL */}
       <div style={{
-        position:'absolute', inset:-22,
-        background:'radial-gradient(circle,rgba(168,85,247,.18) 0%,transparent 70%)',
-        borderRadius:'50%', animation:'orb-pulse 3s ease-in-out infinite',
-      }} />
-      {/* Rings */}
-      {rings.map((r,i) => (
-        <div key={i} style={{
-          position:'absolute',
-          top:(120-r.sz)/2, left:(120-r.sz)/2,
-          width:r.sz, height:r.sz, borderRadius:'50%',
-          border:`1px solid ${r.brd}`,
-          animation:`${r.dir} ${r.spd} linear infinite`,
-        }} />
-      ))}
-      {/* Core orb */}
+        position:'absolute', top:0, left:0,
+        width:isHub?18:14, height:isHub?18:14,
+        borderTop:`2px solid ${ha(node.color,.75)}`,
+        borderLeft:`2px solid ${ha(node.color,.75)}`,
+        borderTopLeftRadius:isHub?13:10,
+      }}/>
+      {/* Corner bracket BR */}
       <div style={{
-        position:'absolute', top:32, left:32, width:56, height:56,
-        borderRadius:'50%',
-        background:'radial-gradient(circle at 38% 38%, rgba(0,229,255,.9), rgba(168,85,247,.7) 60%, rgba(255,200,1,.4))',
-        boxShadow:'0 0 28px rgba(0,229,255,.5), 0 0 60px rgba(168,85,247,.3)',
-        animation:'orb-pulse 2.4s ease-in-out infinite',
-      }} />
-      {/* Ping ring */}
+        position:'absolute', bottom:0, right:0,
+        width:isHub?14:10, height:isHub?14:10,
+        borderBottom:`1.5px solid ${ha(node.color,.4)}`,
+        borderRight:`1.5px solid ${ha(node.color,.4)}`,
+        borderBottomRightRadius:isHub?13:10,
+      }}/>
+      {/* Status dot */}
       <div style={{
-        position:'absolute', top:32, left:32, width:56, height:56,
-        borderRadius:'50%',
-        border:'2px solid rgba(0,229,255,.55)',
-        animation:'node-ping 2s ease-out infinite',
-      }} />
-    </div>
-  );
-}
-
-/* ─── Mini bar chart ──────────────────────────────────────────────── */
-function MiniBarChart() {
-  const bars = [55,72,48,88,65,91,79,60,95,84];
-  return (
-    <div style={{ display:'flex', gap:3, alignItems:'flex-end', height:32 }}>
-      {bars.map((h,i) => (
-        <div key={i} style={{
-          flex:1, borderRadius:2,
-          background:`linear-gradient(to top, rgba(0,229,255,.8), rgba(168,85,247,.5))`,
-          height:`${h}%`,
-          transformOrigin:'bottom',
-          animation:`bar-rise .6s ${i*0.07}s ease-out both`,
-        }} />
-      ))}
-    </div>
-  );
-}
-
-/* ─── SVG wave sparkline ──────────────────────────────────────────── */
-function Sparkline() {
-  const pts = 'M0,22 C14,10 28,30 42,18 C56,6 70,26 84,14 C98,2 112,22 126,12 C140,2 154,22 168,14 C182,6 196,20 210,10 C224,0 238,18 252,10';
-  return (
-    <svg width="100%" height="32" viewBox="0 0 252 32" style={{ overflow:'visible' }}>
-      <defs>
-        <linearGradient id="wg" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="rgba(0,229,255,.35)" />
-          <stop offset="100%" stopColor="rgba(0,229,255,0)" />
-        </linearGradient>
-      </defs>
-      <path d={pts} fill="none" stroke="rgba(0,229,255,.7)" strokeWidth="1.5" />
-      <path d={`${pts} L252,32 L0,32 Z`} fill="url(#wg)" />
-    </svg>
-  );
-}
-
-/* ─── Pipeline nodes ──────────────────────────────────────────────── */
-const PIPELINE = [
-  { label:'Lead',     color:'#00E5FF' },
-  { label:'AI',       color:'#A855F7' },
-  { label:'CRM',      color:'#FFC801' },
-  { label:'Email',    color:'#00FF9D' },
-  { label:'Done',     color:'#6ECBCA' },
-];
-function PipelineNode({ label, color, i }) {
-  return (
-    <div style={{ display:'flex', alignItems:'center', gap:0 }}>
-      <div style={{ textAlign:'center' }}>
-        <div style={{
-          position:'relative', width:30, height:30, borderRadius:'50%',
-          background:`radial-gradient(circle, ${color}33, ${color}11)`,
-          border:`1.5px solid ${color}`,
-          display:'flex', alignItems:'center', justifyContent:'center',
-        }}>
-          <div style={{ width:8, height:8, borderRadius:'50%', background:color,
-            boxShadow:`0 0 8px ${color}` }} />
-          {/* Ping */}
+        position:'absolute', top:7, right:8, width:5, height:5,
+        borderRadius:'50%', background:node.color, color:node.color,
+        animation:'aif-pulse 1.7s ease-in-out infinite',
+      }}/>
+      {/* Label */}
+      <p style={{
+        fontSize:isHub?9:7.5,
+        fontFamily:'JetBrains Mono,monospace',
+        color:node.color,
+        letterSpacing:'.1em',
+        textTransform:'uppercase',
+        fontWeight:700,
+        marginBottom:2,
+        paddingRight:14,
+        lineHeight:1.2,
+      }}>{node.label}</p>
+      {/* Sub-label */}
+      <p style={{
+        fontSize:7, color:'rgba(200,210,255,.45)',
+        fontFamily:'monospace', letterSpacing:'.04em',
+      }}>{node.sub}</p>
+      {/* Hub extras: spinner + progress bar */}
+      {isHub && (
+        <div style={{ marginTop:7, display:'flex', alignItems:'center', gap:6 }}>
           <div style={{
-            position:'absolute', inset:-1, borderRadius:'50%',
-            border:`1.5px solid ${color}`,
-            animation:`node-ping 2.4s ${i*0.5}s ease-out infinite`,
-          }} />
-        </div>
-        <p style={{ fontSize:8, color:'rgba(255,255,255,.55)', marginTop:3, whiteSpace:'nowrap' }}>{label}</p>
-      </div>
-      {i < PIPELINE.length - 1 && (
-        <div style={{ position:'relative', width:24, height:4, margin:'0 2px', marginBottom:14 }}>
-          <div style={{
-            width:'100%', height:1, background:'rgba(0,229,255,.2)',
-            position:'absolute', top:'50%',
-          }} />
-          <div style={{
-            position:'absolute', top:'50%', transform:'translateY(-50%)',
-            width:5, height:5, borderRadius:'50%', background:'#00E5FF',
-            boxShadow:'0 0 6px #00E5FF',
-            animation:`packet-flow 2.2s ${i*0.7}s linear infinite`,
-          }} />
+            width:13, height:13, borderRadius:'50%', flexShrink:0,
+            border:`1.5px solid ${node.color}`, borderTopColor:'transparent',
+            animation:'aif-spin 1s linear infinite',
+          }}/>
+          <div style={{ flex:1, height:3, borderRadius:2, background:'rgba(255,255,255,.08)', overflow:'hidden' }}>
+            <div style={{
+              height:'100%', borderRadius:2, width:'74%',
+              background:`linear-gradient(90deg,${ha(node.color,.55)},${node.color})`,
+              animation:'aif-bar .8s ease-out both',
+            }}/>
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-/* ─── Circular progress ───────────────────────────────────────────── */
-function CircleProgress({ pct, color, size = 44, label }) {
-  const r = (size - 6) / 2;
-  const circ = 2 * Math.PI * r;
-  const dash = (pct / 100) * circ;
-  return (
-    <div style={{ position:'relative', width:size, height:size }}>
-      <svg width={size} height={size} style={{ transform:'rotate(-90deg)' }}>
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,.08)" strokeWidth={4} />
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={4}
-          strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" />
-      </svg>
-      <div style={{
-        position:'absolute', inset:0, display:'flex', alignItems:'center',
-        justifyContent:'center', flexDirection:'column',
-      }}>
-        <span style={{ fontSize:10, fontWeight:700, color, lineHeight:1 }}>{pct}%</span>
-        {label && <span style={{ fontSize:6, color:'rgba(255,255,255,.45)', marginTop:1 }}>{label}</span>}
-      </div>
-    </div>
-  );
-}
-
-/* ─── Canvas particle field ───────────────────────────────────────── */
-function ParticleCanvas() {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let raf;
-
-    const resize = () => {
-      canvas.width  = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
-    resize();
-    const ro = new ResizeObserver(resize);
-    ro.observe(canvas);
-
-    const N = 60;
-    const pts = Array.from({ length:N }, () => ({
-      x: Math.random(), y: Math.random(),
-      vx: (Math.random()-.5)*0.03, vy: (Math.random()-.5)*0.03,
-    }));
-
-    const tick = () => {
-      raf = requestAnimationFrame(tick);
-      const W = canvas.width, H = canvas.height;
-      ctx.clearRect(0,0,W,H);
-      pts.forEach(p => {
-        p.x += p.vx/100; p.y += p.vy/100;
-        if (p.x<0||p.x>1) p.vx*=-1;
-        if (p.y<0||p.y>1) p.vy*=-1;
-        const px = p.x*W, py = p.y*H;
-        ctx.beginPath(); ctx.arc(px,py,1.2,0,Math.PI*2);
-        ctx.fillStyle='rgba(0,229,255,.25)'; ctx.fill();
-      });
-      for(let i=0;i<N;i++){
-        for(let j=i+1;j<N;j++){
-          const dx=(pts[i].x-pts[j].x)*W, dy=(pts[i].y-pts[j].y)*H;
-          const d=Math.hypot(dx,dy);
-          if(d<90){
-            ctx.beginPath();
-            ctx.moveTo(pts[i].x*W,pts[i].y*H);
-            ctx.lineTo(pts[j].x*W,pts[j].y*H);
-            ctx.strokeStyle=`rgba(0,229,255,${.12*(1-d/90)})`;
-            ctx.lineWidth=.5; ctx.stroke();
-          }
-        }
-      }
-    };
-    raf = requestAnimationFrame(tick);
-    return () => { cancelAnimationFrame(raf); ro.disconnect(); };
-  }, []);
-
-  return <canvas ref={ref} aria-hidden="true"
-    style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none' }} />;
-}
-
-/* ─── Main dashboard ──────────────────────────────────────────────── */
-const AGENTS = [
-  { name:'Neural Processing', pct:'98%',  color:'#00E5FF', status:'Active'     },
-  { name:'Workflow Engine',   pct:'–',    color:'#A855F7', status:'Running'    },
-  { name:'Email Automation',  pct:'–',    color:'#00FF9D', status:'Connected'  },
-  { name:'CRM Sync',          pct:'–',    color:'#FFC801', status:'Online'     },
-  { name:'Lead Qualification',pct:'–',    color:'#6ECBCA', status:'Running'    },
-];
-const STATUS_COLOR = { Active:'#00FF9D', Running:'#00E5FF', Connected:'#A855F7', Online:'#FFC801' };
-
+/* ─── Export ─────────────────────────────────────────────────────────── */
 export default function NeuralNetworkScene() {
-  const dashRef = useRef(null);
-  const [tilt, setTilt] = useState({ rx:0, ry:0 });
+  const containerRef = useRef(null);
+  const [tilt, setTilt] = useState({ x:0, y:0 });
+  const smoothRef = useRef({ x:0, y:0 });
+  const targetRef = useRef({ x:0, y:0 });
+  const rafRef    = useRef(null);
 
-  /* inject keyframes once */
+  /* Inject keyframes */
   useEffect(() => {
-    if (document.getElementById('holo-kf')) return;
+    if (document.getElementById(KFID)) return;
     const s = document.createElement('style');
-    s.id = 'holo-kf'; s.textContent = KEYFRAMES;
+    s.id=KFID; s.textContent=KF;
     document.head.appendChild(s);
     return () => s.remove();
   }, []);
 
-  /* mouse tilt */
-  const onMouseMove = useCallback((e) => {
-    const el = dashRef.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const mx = (e.clientX - r.left) / r.width  - 0.5;
-    const my = (e.clientY - r.top)  / r.height - 0.5;
-    setTilt({ rx: -my * 10, ry: mx * 14 });
+  /* Smooth tilt */
+  useEffect(() => {
+    const loop = () => {
+      rafRef.current = requestAnimationFrame(loop);
+      smoothRef.current.x += (targetRef.current.x - smoothRef.current.x) * 0.08;
+      smoothRef.current.y += (targetRef.current.y - smoothRef.current.y) * 0.08;
+      setTilt({ x: smoothRef.current.x, y: smoothRef.current.y });
+    };
+    rafRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafRef.current);
   }, []);
-  const onMouseLeave = useCallback(() => setTilt({ rx:0, ry:0 }), []);
 
-  const label  = { fontSize:9,  color:'rgba(255,255,255,.42)', fontFamily:'monospace', letterSpacing:1, textTransform:'uppercase' };
-  const value  = { fontSize:13, color:'#fff', fontWeight:700, fontFamily:'monospace' };
-  const accent = { fontSize:8,  color:'#00E5FF', fontFamily:'monospace' };
+  const onMouse = useCallback(e => {
+    const r = containerRef.current?.getBoundingClientRect(); if (!r) return;
+    targetRef.current = {
+      x: (e.clientX - r.left) / r.width  * 16 - 8,
+      y: (e.clientY - r.top)  / r.height * 12 - 6,
+    };
+  }, []);
+  const onLeave = useCallback(() => { targetRef.current = {x:0,y:0}; }, []);
 
   return (
-    <div ref={dashRef} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
+    <div
+      ref={containerRef}
+      onMouseMove={onMouse}
+      onMouseLeave={onLeave}
       aria-hidden="true"
-      style={{
-        position:'absolute', inset:0, perspective:900,
-        display:'flex', alignItems:'center', justifyContent:'center',
-      }}
+      style={{ position:'absolute', inset:0, perspective:900, overflow:'hidden' }}
     >
-      {/* Particle canvas background */}
-      <ParticleCanvas />
-
-      {/* Floating dashboard group */}
+      <SceneCanvas />
       <div style={{
-        position:'relative', width:'100%', height:'100%',
-        animation:'holo-float 7s ease-in-out infinite',
-        transform:`rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
-        transition:'transform .12s ease-out',
+        position:'absolute', inset:0,
+        transform:`rotateX(${-tilt.y*.28}deg) rotateY(${tilt.x*.28}deg)`,
         transformStyle:'preserve-3d',
-        display:'grid',
-        gridTemplateColumns:'1fr 1fr',
-        gridTemplateRows:'auto auto auto',
-        gap:9, padding:16,
-        boxSizing:'border-box',
       }}>
-
-        {/* ── Panel 1: AI Orb + title ── */}
-        <div style={glass({ gridColumn:'1/2', display:'flex', flexDirection:'column', alignItems:'center', gap:8, padding:'14px 12px' })}>
-          <ScanLine duration="3.5s" />
-          <p style={{ ...label, marginBottom:2 }}>PLASMA CORE</p>
-          <AIOrb />
-          <div style={{ display:'flex', gap:8, marginTop:4 }}>
-            <CircleProgress pct={98} color="#00E5FF" label="CPU" />
-            <CircleProgress pct={73} color="#A855F7" label="MEM" />
-            <CircleProgress pct={91} color="#FFC801" label="GPU" />
-          </div>
-        </div>
-
-        {/* ── Panel 2: Agent Status ── */}
-        <div style={glass({ gridColumn:'2/3', display:'flex', flexDirection:'column', gap:6 })}>
-          <ScanLine duration="4.1s" delay=".8s" />
-          <p style={label}>AI AGENTS</p>
-          {AGENTS.map((a,i) => (
-            <div key={i} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:5 }}>
-              <div style={{ display:'flex', alignItems:'center', gap:5, minWidth:0 }}>
-                <Dot color={a.color} delay={`${i*0.3}s`} />
-                <span style={{ fontSize:9, color:'rgba(255,255,255,.7)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{a.name}</span>
-              </div>
-              <span style={{ fontSize:8, color:STATUS_COLOR[a.status], fontFamily:'monospace', flexShrink:0 }}>{a.status}</span>
-            </div>
-          ))}
-
-          {/* KPI row */}
-          <div style={{ display:'flex', gap:6, marginTop:4, borderTop:'1px solid rgba(255,255,255,.06)', paddingTop:6 }}>
-            {[['2.3M','Tasks/day'],['99.9%','Uptime'],['140ms','Latency']].map(([v,l])=>(
-              <div key={l} style={{ flex:1, textAlign:'center' }}>
-                <p style={{ ...value, fontSize:11, color:'#FFC801', animation:'num-tick .4s ease infinite alternate' }}>{v}</p>
-                <p style={{ ...label, fontSize:7 }}>{l}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Panel 3: Neural Activity graph ── */}
-        <div style={glass({ gridColumn:'1/2', display:'flex', flexDirection:'column', gap:5 })}>
-          <ScanLine duration="5s" delay="1.4s" />
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-            <p style={label}>NEURAL ACTIVITY</p>
-            <span style={{ ...accent, fontSize:7 }}>LIVE ●</span>
-          </div>
-          <Sparkline />
-          <MiniBarChart />
-          <p style={{ ...label, fontSize:7, textAlign:'right', marginTop:2 }}>Throughput: 98.3k ops/s</p>
-        </div>
-
-        {/* ── Panel 4: Workflow pipeline ── */}
-        <div style={glass({ gridColumn:'2/3', display:'flex', flexDirection:'column', gap:8 })}>
-          <ScanLine duration="3.8s" delay="2s" />
-          <p style={label}>WORKFLOW PIPELINE</p>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', overflow:'hidden' }}>
-            {PIPELINE.map((n,i) => <PipelineNode key={i} {...n} i={i} />)}
-          </div>
-
-          {/* Activity log */}
-          <div style={{ borderTop:'1px solid rgba(255,255,255,.06)', paddingTop:7, display:'flex', flexDirection:'column', gap:4 }}>
-            {[
-              ['✓','Lead scored: 94pts','#00FF9D'],
-              ['↗','CRM record updated','#00E5FF'],
-              ['◉','Email sequence triggered','#A855F7'],
-            ].map(([icon,msg,col],i)=>(
-              <div key={i} style={{ display:'flex', gap:5, alignItems:'center' }}>
-                <span style={{ fontSize:8, color:col }}>{icon}</span>
-                <span style={{ fontSize:8, color:'rgba(255,255,255,.5)' }}>{msg}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
+        {NODES.map(n => <NodeCard key={n.id} node={n} tilt={tilt} />)}
       </div>
     </div>
   );

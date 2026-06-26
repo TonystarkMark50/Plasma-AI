@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown } from '../assets/svgs';
+import { ChevronDown, ChevronUp } from '../assets/svgs';
 
 const faqs = [
   {
@@ -53,9 +53,10 @@ export default function FAQ() {
                   className="w-full flex items-center justify-between p-6 text-left"
                 >
                   <h3 className="font-display text-base font-bold text-oceanic-noir pr-4">{faq.q}</h3>
-                  <ChevronDown
-                    className={`accordion-chevron w-5 h-5 text-oceanic-noir/50 flex-shrink-0 ${isOpen ? 'open' : ''}`}
-                  />
+                  {isOpen
+                    ? <ChevronUp  className="w-5 h-5 text-forsythia flex-shrink-0 transition-colors duration-150" />
+                    : <ChevronDown className="w-5 h-5 text-oceanic-noir/50 flex-shrink-0 transition-colors duration-150" />
+                  }
                 </button>
                 <div
                   id={`faq-panel-${i}`}

@@ -2,9 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { useBreakpoint } from '../hooks/useBreakpoint';
 import { ArrowTrendingUp, ArrowPath, ChartPie } from '../assets/svgs';
 
-const NeuralNetworkScene = lazy(() =>
-  import('./ThreeScene/NeuralNetworkScene')
-);
+const AIUniverseScene = lazy(() => import('./ThreeScene/AIUniverseScene'));
 
 function MetricBadge({ Icon, value, label }) {
   return (
@@ -19,8 +17,8 @@ function MetricBadge({ Icon, value, label }) {
 function Scene3D({ className, style }) {
   return (
     <div className={className} style={style} aria-hidden="true">
-      <Suspense fallback={null}>
-        <NeuralNetworkScene />
+      <Suspense fallback={<div className="w-full h-full bg-oceanic-noir/80" />}>
+        <AIUniverseScene />
       </Suspense>
     </div>
   );
@@ -35,18 +33,16 @@ export default function Hero() {
       aria-labelledby="hero-heading"
       className="relative min-h-screen flex items-center overflow-hidden pt-16 sm:pt-20"
     >
-      {/* Background */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse 90% 65% at 65% 48%, rgba(17,76,90,0.55), transparent 68%), #172B36',
+            'radial-gradient(ellipse 90% 65% at 65% 48%, rgba(17,76,90,0.55), transparent 68%), #050816',
         }}
       />
 
       <div className="container relative z-10 w-full">
         {isMobile ? (
-          /* ── Mobile: scene tinted behind, content centred ── */
           <div className="relative py-16 px-4 text-center">
             <Scene3D
               className="absolute inset-0 z-0"
@@ -57,7 +53,6 @@ export default function Hero() {
             </div>
           </div>
         ) : (
-          /* ── Desktop: content left | scene right ── */
           <div className="grid grid-cols-[1fr_1fr] gap-10 lg:gap-16 items-center"
                style={{ minHeight: 'calc(100vh - 80px)' }}>
             <div className="flex flex-col justify-center">
@@ -106,7 +101,7 @@ function Content({ mobile = false }) {
         }}
       >
         Connect any data source, build intelligent pipelines, and ship features
-        10× faster — without the infrastructure overhead.
+        10&times; faster — without the infrastructure overhead.
       </p>
 
       <div
@@ -131,3 +126,4 @@ function Content({ mobile = false }) {
     </>
   );
 }
+
