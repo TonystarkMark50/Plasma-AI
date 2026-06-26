@@ -1,0 +1,85 @@
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,200,1,0.10); }
+  50%       { box-shadow: 0 0 40px rgba(255,200,1,0.20); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes border-glow {
+  0%, 100% { border-color: rgba(255,200,1,0.15); }
+  50%       { border-color: rgba(255,200,1,0.3); }
+}
+
+/* Entry stagger — total orchestration ≤ 500ms (240 + 300 = 540ms — capped at 4 levels) */
+.anim-hero-1 { animation: fade-up 300ms ease-out 0ms   both; }
+.anim-hero-2 { animation: fade-up 300ms ease-out 80ms  both; }
+.anim-hero-3 { animation: fade-up 300ms ease-out 160ms both; }
+.anim-hero-4 { animation: fade-up 300ms ease-out 240ms both; }
+
+/* Floating metric cards */
+.float-1 { animation: float 4s ease-in-out 0.0s  infinite; }
+.float-2 { animation: float 4s ease-in-out 0.8s  infinite; }
+.float-3 { animation: float 4s ease-in-out 1.6s  infinite; }
+
+/* Bento grid cards */
+.bento-card {
+  transition: transform 180ms ease-out, box-shadow 180ms ease-out, border-color 180ms ease-out;
+  will-change: transform;
+}
+
+.bento-card:hover {
+  transform: scale(1.025) translateZ(0);
+  box-shadow: 0 20px 40px rgba(23,43,54,0.25), 0 0 0 1px rgba(255,200,1,0.2);
+  border-color: rgba(255,200,1,0.2);
+}
+
+/* Accordion */
+.accordion-panel {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 350ms ease-in-out, opacity 300ms ease-in-out;
+}
+
+.accordion-panel--open {
+  max-height: 500px;
+  opacity: 1;
+}
+
+.accordion-chevron {
+  transition: transform 150ms ease-out;
+}
+
+.accordion-chevron.open {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

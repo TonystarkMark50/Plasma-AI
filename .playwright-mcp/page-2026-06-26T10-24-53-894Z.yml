@@ -1,0 +1,369 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - navigation "Main navigation" [ref=e4]:
+      - link "Nexus AI home" [ref=e5] [cursor=pointer]:
+        - /url: "#"
+        - img [ref=e6]
+        - generic [ref=e8]: NEXUSAI
+      - generic [ref=e9]:
+        - link "Features" [ref=e10] [cursor=pointer]:
+          - /url: "#features"
+        - link "Pricing" [ref=e11] [cursor=pointer]:
+          - /url: "#pricing"
+        - link "Integrations" [ref=e12] [cursor=pointer]:
+          - /url: "#workflow"
+        - link "Docs" [ref=e13] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=e14]:
+        - searchbox "Search Nexus AI" [ref=e15]
+        - button "Open search" [ref=e16] [cursor=pointer]:
+          - img [ref=e17]
+        - link "Get Started" [ref=e19] [cursor=pointer]:
+          - /url: "#cta-banner"
+  - main [ref=e20]:
+    - region "Trusted companies" [ref=e22]:
+      - paragraph [ref=e23]: Trusted by engineering teams at
+      - generic [ref=e25]:
+        - generic [ref=e26]: Vercel
+        - generic [ref=e27]: Stripe
+        - generic [ref=e28]: Netflix
+        - generic [ref=e29]: Figma
+        - generic [ref=e30]: Linear
+        - generic [ref=e31]: Notion
+        - generic [ref=e32]: Vercel
+        - generic [ref=e33]: Stripe
+        - generic [ref=e34]: Netflix
+        - generic [ref=e35]: Figma
+        - generic [ref=e36]: Linear
+        - generic [ref=e37]: Notion
+    - region "Everything your data pipeline needs." [ref=e38]:
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - paragraph [ref=e41]: Capabilities
+          - heading "Everything your data pipeline needs." [level=2] [ref=e42]
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - img [ref=e45]
+            - heading "Automated Pipelines" [level=3] [ref=e47]
+            - paragraph [ref=e48]: Build, deploy, and monitor intelligent data flows without writing infrastructure code.
+          - generic [ref=e49]:
+            - img [ref=e50]
+            - heading "Real-time Analytics" [level=3] [ref=e52]
+            - paragraph [ref=e53]: Stream processing with sub-150ms latency across all your data sources.
+          - generic [ref=e54]:
+            - img [ref=e55]
+            - heading "Usage Intelligence" [level=3] [ref=e59]
+            - paragraph [ref=e60]: Understand exactly where compute is spent with granular attribution dashboards.
+          - generic [ref=e61]:
+            - img [ref=e62]
+            - heading "Smart Configuration" [level=3] [ref=e66]
+            - paragraph [ref=e67]: Declarative pipeline config that adapts automatically to your data schema.
+          - generic [ref=e68]:
+            - img [ref=e69]
+            - heading "Deep Integrations" [level=3] [ref=e71]
+            - paragraph [ref=e72]: Connect to 200 plus services with pre-built connectors and a universal API.
+          - generic [ref=e73]:
+            - img [ref=e74]
+            - heading "3D Data Modeling" [level=3] [ref=e76]
+            - paragraph [ref=e77]: Visualize complex data relationships in three-dimensional space.
+    - region "From raw data to production in four steps." [ref=e78]:
+      - generic [ref=e79]:
+        - generic [ref=e80]:
+          - paragraph [ref=e81]: HOW IT WORKS
+          - heading "From raw data to production in four steps." [level=2] [ref=e82]
+        - generic [ref=e83]:
+          - generic [ref=e84]:
+            - generic [ref=e85]:
+              - img [ref=e87]
+              - generic [ref=e89]: "01"
+            - img [ref=e90]
+            - generic [ref=e92]:
+              - heading "Connect" [level=3] [ref=e93]
+              - paragraph [ref=e94]: Connect your data sources via API or pre-built connectors.
+          - generic [ref=e95]:
+            - generic [ref=e96]:
+              - img [ref=e98]
+              - generic [ref=e102]: "02"
+            - img [ref=e103]
+            - generic [ref=e105]:
+              - heading "Configure" [level=3] [ref=e106]
+              - paragraph [ref=e107]: Define your pipeline logic with declarative YAML or our visual editor.
+          - generic [ref=e108]:
+            - generic [ref=e109]:
+              - img [ref=e111]
+              - generic [ref=e113]: "03"
+            - img [ref=e114]
+            - generic [ref=e116]:
+              - heading "Automate" [level=3] [ref=e117]
+              - paragraph [ref=e118]: Nexus AI runs, monitors, and self-heals your pipelines continuously.
+          - generic [ref=e119]:
+            - generic [ref=e120]:
+              - img [ref=e122]
+              - generic [ref=e126]: "04"
+            - generic [ref=e127]:
+              - heading "Analyze" [level=3] [ref=e128]
+              - paragraph [ref=e129]: Explore outcomes in real-time across every dimension of your data.
+    - region "Transparent pricing, zero surprises." [ref=e130]:
+      - generic [ref=e131]:
+        - generic [ref=e132]:
+          - paragraph [ref=e133]: PRICING
+          - heading "Transparent pricing, zero surprises." [level=2] [ref=e134]
+        - generic [ref=e135]:
+          - generic [ref=e136]:
+            - button "Monthly" [ref=e137] [cursor=pointer]
+            - button "Annual" [ref=e138] [cursor=pointer]
+          - generic [ref=e139]:
+            - combobox "Select currency" [ref=e140] [cursor=pointer]:
+              - option "$ USD" [selected]
+              - option "₹ INR"
+              - option "€ EUR"
+            - img
+        - generic [ref=e141]:
+          - article [ref=e142]:
+            - generic [ref=e143]:
+              - img [ref=e144]
+              - heading "Starter" [level=3] [ref=e146]
+            - paragraph [ref=e147]: For individuals and side projects
+            - generic [ref=e148]:
+              - generic [ref=e149]: $29
+              - text: /month
+            - list [ref=e150]:
+              - listitem [ref=e151]:
+                - img [ref=e152]
+                - text: 5 automated pipelines
+              - listitem [ref=e154]:
+                - img [ref=e155]
+                - text: 50K tasks per month
+              - listitem [ref=e157]:
+                - img [ref=e158]
+                - text: Basic analytics
+              - listitem [ref=e160]:
+                - img [ref=e161]
+                - text: Email support
+              - listitem [ref=e163]:
+                - img [ref=e164]
+                - text: 99.5% uptime SLA
+            - button "Start Free Trial" [ref=e166] [cursor=pointer]
+          - article [ref=e167]:
+            - generic [ref=e168]: Most Popular
+            - generic [ref=e169]:
+              - img [ref=e170]
+              - heading "Pro" [level=3] [ref=e172]
+            - paragraph [ref=e173]: For growing engineering teams
+            - generic [ref=e174]:
+              - generic [ref=e175]: $79
+              - text: /month
+            - list [ref=e176]:
+              - listitem [ref=e177]:
+                - img [ref=e178]
+                - text: Unlimited pipelines
+              - listitem [ref=e180]:
+                - img [ref=e181]
+                - text: 2M tasks per month
+              - listitem [ref=e183]:
+                - img [ref=e184]
+                - text: Real-time analytics
+              - listitem [ref=e186]:
+                - img [ref=e187]
+                - text: Priority support
+              - listitem [ref=e189]:
+                - img [ref=e190]
+                - text: 99.9% uptime SLA
+              - listitem [ref=e192]:
+                - img [ref=e193]
+                - text: Custom integrations
+            - button "Start Free Trial" [ref=e195] [cursor=pointer]
+          - article [ref=e196]:
+            - generic [ref=e197]:
+              - img [ref=e198]
+              - heading "Enterprise" [level=3] [ref=e200]
+            - paragraph [ref=e201]: For large organizations
+            - generic [ref=e202]:
+              - generic [ref=e203]: $199
+              - text: /month
+            - list [ref=e204]:
+              - listitem [ref=e205]:
+                - img [ref=e206]
+                - text: Unlimited everything
+              - listitem [ref=e208]:
+                - img [ref=e209]
+                - text: Dedicated infrastructure
+              - listitem [ref=e211]:
+                - img [ref=e212]
+                - text: White-glove onboarding
+              - listitem [ref=e214]:
+                - img [ref=e215]
+                - text: 24/7 dedicated support
+              - listitem [ref=e217]:
+                - img [ref=e218]
+                - text: 99.99% uptime SLA
+              - listitem [ref=e220]:
+                - img [ref=e221]
+                - text: SSO and SAML
+              - listitem [ref=e223]:
+                - img [ref=e224]
+                - text: Custom contracts
+            - button "Contact Sales" [ref=e226] [cursor=pointer]
+    - region "Trusted by 10,000 plus engineering teams." [ref=e227]:
+      - generic [ref=e228]:
+        - heading "Trusted by 10,000 plus engineering teams." [level=2] [ref=e230]
+        - generic [ref=e231]:
+          - generic [ref=e232]:
+            - blockquote [ref=e233]:
+              - paragraph [ref=e234]: “Nexus AI transformed our data pipeline from a nightmare into a competitive advantage. We reduced time-to-insight by 87%.”
+              - generic [ref=e235]:
+                - paragraph [ref=e236]: Sarah Chen
+                - paragraph [ref=e237]: VP of Engineering, Vercel
+                - generic [ref=e238]: ★★★★★
+            - blockquote [ref=e239]:
+              - paragraph [ref=e240]: “The intelligent automation and self-healing pipelines saved us thousands in engineering hours. It is infrastructure magic.”
+              - generic [ref=e241]:
+                - paragraph [ref=e242]: Marcus Rivera
+                - paragraph [ref=e243]: CTO, Linear
+                - generic [ref=e244]: ★★★★★
+            - blockquote [ref=e245]:
+              - paragraph [ref=e246]: “We evaluated every solution on the market. Nexus AI won on reliability, performance, and sheer developer experience.”
+              - generic [ref=e247]:
+                - paragraph [ref=e248]: Priya Patel
+                - paragraph [ref=e249]: Head of Data, Stripe
+                - generic [ref=e250]: ★★★★★
+          - button "Previous testimonial" [ref=e251] [cursor=pointer]:
+            - img [ref=e252]
+          - button "Next testimonial" [ref=e254] [cursor=pointer]:
+            - img [ref=e255]
+    - region "Frequently asked questions." [ref=e257]:
+      - generic [ref=e258]:
+        - heading "Frequently asked questions." [level=2] [ref=e260]
+        - generic [ref=e261]:
+          - generic [ref=e262]:
+            - button "How does Nexus AI handle data security and compliance?" [ref=e263] [cursor=pointer]:
+              - heading "How does Nexus AI handle data security and compliance?" [level=3] [ref=e264]
+              - img [ref=e266]
+            - region:
+              - paragraph [ref=e268]: Nexus AI is SOC 2 Type II certified and fully GDPR compliant. All data is encrypted at rest using AES-256 and in transit using TLS 1.3. We offer dedicated infrastructure for enterprise customers with VPC peering and private networking options.
+          - generic [ref=e269]:
+            - button "Can I connect my existing databases and tools?" [ref=e270] [cursor=pointer]:
+              - heading "Can I connect my existing databases and tools?" [level=3] [ref=e271]
+              - img [ref=e273]
+            - region:
+              - paragraph [ref=e275]: Absolutely. Nexus AI features 200+ pre-built connectors for databases (PostgreSQL, MySQL, Snowflake, BigQuery), SaaS tools (Slack, Salesforce, HubSpot), and cloud services (AWS, GCP, Azure). Our universal API lets you connect anything custom.
+          - generic [ref=e276]:
+            - button "What happens if I exceed my monthly task limit?" [ref=e277] [cursor=pointer]:
+              - heading "What happens if I exceed my monthly task limit?" [level=3] [ref=e278]
+              - img [ref=e280]
+            - region:
+              - paragraph [ref=e282]: You will receive notifications at 80% and 100% of your task limit. Pro plans include auto-scaling with pay-as-you-go overage pricing. Enterprise plans include unlimited tasks with no overage charges.
+          - generic [ref=e283]:
+            - button "Is there a free trial available?" [ref=e284] [cursor=pointer]:
+              - heading "Is there a free trial available?" [level=3] [ref=e285]
+              - img [ref=e287]
+            - region:
+              - paragraph [ref=e289]: Yes! All plans come with a 14-day free trial, no credit card required. You get full access to all features with your selected plan limits to evaluate Nexus AI risk-free.
+          - generic [ref=e290]:
+            - button "How does annual billing work?" [ref=e291] [cursor=pointer]:
+              - heading "How does annual billing work?" [level=3] [ref=e292]
+              - img [ref=e294]
+            - region:
+              - paragraph [ref=e296]: Annual billing gives you a 20% discount compared to monthly pricing. You are billed once annually at the discounted rate. All plans include the option to switch from monthly to annual at any time.
+          - generic [ref=e297]:
+            - button "Do you offer custom enterprise contracts?" [ref=e298] [cursor=pointer]:
+              - heading "Do you offer custom enterprise contracts?" [level=3] [ref=e299]
+              - img [ref=e301]
+            - region:
+              - paragraph [ref=e303]: Yes, our Enterprise plan includes custom contracts, dedicated infrastructure, white-glove onboarding, 24/7 support, SSO/SAML, and custom terms. Contact our sales team for a tailored quote.
+    - region "Call to action" [ref=e304]:
+      - generic [ref=e305]:
+        - heading "Ready to automate everything?" [level=2] [ref=e306]
+        - paragraph [ref=e307]: Join thousands of engineering teams already shipping faster with Nexus AI.
+        - link "Start Free Trial" [ref=e308] [cursor=pointer]:
+          - /url: "#pricing"
+  - contentinfo [ref=e309]:
+    - generic [ref=e311]:
+      - generic [ref=e312]:
+        - link "Nexus AI home" [ref=e313] [cursor=pointer]:
+          - /url: "#"
+          - img [ref=e314]
+          - generic [ref=e316]: NEXUSAI
+        - paragraph [ref=e317]: Intelligent data automation platform for modern engineering teams.
+        - paragraph [ref=e318]: © 2026 Nexus AI. All rights reserved.
+      - generic [ref=e319]:
+        - heading "Product" [level=4] [ref=e320]
+        - list [ref=e321]:
+          - listitem [ref=e322]:
+            - link "Features" [ref=e323] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e324]
+              - text: Features
+          - listitem [ref=e326]:
+            - link "Pricing" [ref=e327] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e328]
+              - text: Pricing
+          - listitem [ref=e330]:
+            - link "Integrations" [ref=e331] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e332]
+              - text: Integrations
+          - listitem [ref=e334]:
+            - link "Changelog" [ref=e335] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e336]
+              - text: Changelog
+          - listitem [ref=e338]:
+            - link "Status" [ref=e339] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e340]
+              - text: Status
+      - generic [ref=e342]:
+        - heading "Company" [level=4] [ref=e343]
+        - list [ref=e344]:
+          - listitem [ref=e345]:
+            - link "About" [ref=e346] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e347]
+              - text: About
+          - listitem [ref=e349]:
+            - link "Blog" [ref=e350] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e351]
+              - text: Blog
+          - listitem [ref=e353]:
+            - link "Careers" [ref=e354] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e355]
+              - text: Careers
+          - listitem [ref=e357]:
+            - link "Press" [ref=e358] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e359]
+              - text: Press
+          - listitem [ref=e361]:
+            - link "Legal" [ref=e362] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e363]
+              - text: Legal
+      - generic [ref=e365]:
+        - heading "Connect" [level=4] [ref=e366]
+        - list [ref=e367]:
+          - listitem [ref=e368]:
+            - link "Twitter" [ref=e369] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e370]
+              - text: Twitter
+          - listitem [ref=e372]:
+            - link "GitHub" [ref=e373] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e374]
+              - text: GitHub
+          - listitem [ref=e376]:
+            - link "LinkedIn" [ref=e377] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e378]
+              - text: LinkedIn
+          - listitem [ref=e380]:
+            - link "Discord" [ref=e381] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e382]
+              - text: Discord
+  - button "Scroll to top":
+    - img

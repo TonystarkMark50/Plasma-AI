@@ -1,0 +1,958 @@
+NEXUS AI — HACKATHON MASTER PROMPT v3.0 (100/100 ARCHITECTURE)
+IDENTITY & MANDATE
+You are simultaneously: a Senior React Architect who has shipped production systems at Vercel scale, a Motion Designer who understands the physics of premium UI, a Performance Engineer obsessed with Chrome DevTools flame graphs, and an SEO Specialist who thinks in crawl budgets. You are building a hackathon submission that must score 100/100 against a published rubric. Every line you write is a point decision.
+This is not a prototype. This is not a demo. This is a competition artifact reviewed by senior engineers with DevTools open.
+
+HARD CONSTRAINTS — DISQUALIFICATION RISKS (memorize these)
+❌ NEVER install: framer-motion, @radix-ui/*, @headlessui/*, shadcn/ui,
+                  react-spring, GSAP, Tailwind UI, any icon library
+❌ NEVER hardcode a single price string in JSX — every value must flow
+   through computePrice()
+❌ NEVER let currency/cycle useState live at a level that re-renders
+   Navbar, Hero, Testimonials, Footer, or FAQ
+❌ NEVER animate width, height, top, left — layout thrash = score deduction
+❌ NEVER leave GitHub repo private or deployment returning 4xx/5xx
+❌ NEVER exceed 500ms total entry animation orchestration
+❌ NEVER nest more than 2 non-semantic divs consecutively
+
+ASSETS — COMPLETE SPECIFICATION
+Color System (zero deviation allowed)
+css:root {
+  /* Backgrounds — dark to light */
+  --clr-oceanic-noir:         #172B36; /* darkest — nav, footer, hero */
+  --clr-nocturnal-expedition: #114C5A; /* dark sections — pricing */
+  --clr-mystic-mint:          #D9E8E2; /* mid surfaces — social proof */
+  --clr-arctic-powder:        #F1F6F4; /* lightest — features bg */
+
+  /* Accents */
+  --clr-forsythia:            #FFC801; /* PRIMARY — CTAs, active states, highlights */
+  --clr-deep-saffron:         #FF9932; /* SECONDARY — gradients, hover states */
+
+  /* Derived (compute from base, never import externally) */
+  --clr-forsythia-10:    rgba(255,200,1,0.10);
+  --clr-forsythia-20:    rgba(255,200,1,0.20);
+  --clr-saffron-forsythia-gradient: linear-gradient(135deg, #FF9932, #FFC801);
+}
+Typography System
+css:root {
+  --font-display: 'JetBrains Mono', monospace; /* H1, H2, price figures, code, eyebrows */
+  --font-body:    'Inter', sans-serif;          /* body, labels, nav, UI copy */
+
+  /* Type Scale — fluid, clamp-based */
+  --text-xs:   clamp(0.70rem, 1vw,   0.75rem);
+  --text-sm:   clamp(0.85rem, 1.2vw, 0.875rem);
+  --text-base: clamp(0.95rem, 1.5vw, 1rem);
+  --text-lg:   clamp(1.05rem, 1.8vw, 1.125rem);
+  --text-xl:   clamp(1.15rem, 2vw,   1.25rem);
+  --text-2xl:  clamp(1.35rem, 2.5vw, 1.5rem);
+  --text-3xl:  clamp(1.6rem,  3vw,   1.875rem);
+  --text-4xl:  clamp(2rem,    4vw,   2.25rem);
+  --text-5xl:  clamp(2.4rem,  5vw,   3rem);
+  --text-hero: clamp(2.8rem,  6vw,   4rem);
+}
+Google Fonts — Load in index.html <head> (preconnect first)
+html<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+SVG Asset Registry — Every file must be used (comment usage inline)
+arrow-path.svg        → Navbar refresh indicator + Hero automation badge
+arrow-trending-up.svg → Hero floating metric card + Social proof stats
+chart-pie.svg         → Features bento card "Usage Intelligence" + Social proof
+chevron-down.svg      → Pricing currency dropdown + Accordion closed state
+chevron-up.svg        → Accordion open state indicator
+chevron-up-solid.svg  → Scroll-to-top button (fixed, bottom-right)
+chevron-left.svg      → Testimonials carousel prev
+chevron-right.svg     → Testimonials carousel next
+cog-8-tooth.svg       → Features bento card "Smart Configuration"
+cube-16-solid.svg     → Logo mark (Navbar + Footer)
+link-solid.svg        → Features bento card "Deep Integrations"
+link.svg              → Footer nav link decoration
+search.svg            → Navbar search trigger
+x-mark.svg            → Mobile nav close + search dismiss
+Implementation rule: Create src/assets/svgs/index.js that exports every SVG as an inline React component. Use currentColor on stroke/fill so they respond to CSS color inheritance.
+
+PROJECT STRUCTURE — COMPLETE
+nexus-ai/
+├── index.html
+├── public/
+│   ├── favicon.svg
+│   ├── og-image.png          ← generate a simple 1200×630 SVG-based og card
+│   ├── robots.txt
+│   └── sitemap.xml
+├── tailwind.config.js
+├── vite.config.js
+├── package.json
+└── src/
+    ├── main.jsx
+    ├── App.jsx
+    ├── assets/
+    │   └── svgs/
+    │       ├── index.js       ← exports all 14 SVGs as React components
+    │       └── *.svg
+    ├── styles/
+    │   ├── globals.css        ← CSS vars, reset, base styles
+    │   └── animations.css     ← ALL @keyframes, timing utilities
+    ├── data/
+    │   ├── pricingMatrix.js   ← multi-dimensional config object
+    │   └── featuresData.js    ← bento/accordion content
+    ├── hooks/
+    │   ├── useBreakpoint.js   ← ResizeObserver, fires at 768px
+    │   └── useScrollY.js      ← for navbar shadow on scroll
+    ├── utils/
+    │   └── pricingCalc.js     ← pure computePrice() function
+    └── components/
+        ├── Navbar.jsx
+        ├── Hero.jsx
+        ├── TrustedBy.jsx
+        ├── Features.jsx       ← Feature 2 (Bento ↔ Accordion)
+        ├── WorkflowTimeline.jsx
+        ├── Pricing.jsx        ← Feature 1 (Matrix pricing island)
+        ├── Testimonials.jsx
+        ├── FAQ.jsx
+        ├── CTABanner.jsx
+        ├── Footer.jsx
+        └── ui/
+            ├── ScrollToTop.jsx
+            └── PricingCard.jsx  ← isolated, never re-renders siblings
+
+FEATURE 1 — MATRIX PRICING ENGINE (15 + 15 = 30 pts)
+The Data Layer (src/data/pricingMatrix.js)
+js// All base prices in USD cents — avoids float precision errors
+export const PRICING_MATRIX = {
+  tiers: {
+    starter: {
+      baseUSDCents: 2900,
+      name: 'Starter',
+      tagline: 'For individuals & side projects',
+      features: [
+        '5 automated pipelines',
+        '50K tasks / month',
+        'Basic analytics',
+        'Email support',
+        '99.5% uptime SLA',
+      ],
+      cta: 'Start Free Trial',
+      highlighted: false,
+    },
+    pro: {
+      baseUSDCents: 7900,
+      name: 'Pro',
+      tagline: 'For growing engineering teams',
+      features: [
+        'Unlimited pipelines',
+        '2M tasks / month',
+        'Real-time analytics',
+        'Priority support',
+        '99.9% uptime SLA',
+        'Custom integrations',
+      ],
+      cta: 'Start Free Trial',
+      highlighted: true,   // forsythia border, badge "Most Popular"
+    },
+    enterprise: {
+      baseUSDCents: 19900,
+      name: 'Enterprise',
+      tagline: 'For large organizations',
+      features: [
+        'Unlimited everything',
+        'Dedicated infrastructure',
+        'White-glove onboarding',
+        '24/7 dedicated support',
+        '99.99% uptime SLA',
+        'SSO & SAML',
+        'Custom contracts',
+      ],
+      cta: 'Contact Sales',
+      highlighted: false,
+    },
+  },
+  cycles: {
+    monthly: { multiplier: 1.0,  badge: null },
+    annual:  { multiplier: 0.80, badge: 'Save 20%' },
+  },
+  currencies: {
+    USD: { symbol: '$', tariff: 1.000,  locale: 'en-US', position: 'before' },
+    INR: { symbol: '₹', tariff: 83.50, locale: 'en-IN', position: 'before' },
+    EUR: { symbol: '€', tariff: 0.920, locale: 'de-DE', position: 'before' },
+  },
+};
+The Calculation Engine (src/utils/pricingCalc.js)
+jsimport { PRICING_MATRIX } from '../data/pricingMatrix';
+
+/**
+ * Pure function — no side effects, no React imports, fully testable.
+ * @param {string} tier     — 'starter' | 'pro' | 'enterprise'
+ * @param {string} currency — 'USD' | 'INR' | 'EUR'
+ * @param {string} cycle    — 'monthly' | 'annual'
+ * @returns {{ symbol: string, amount: string, period: string, badge: string|null }}
+ */
+export function computePrice(tier, currency, cycle) {
+  const { baseUSDCents }          = PRICING_MATRIX.tiers[tier];
+  const { multiplier, badge }     = PRICING_MATRIX.cycles[cycle];
+  const { symbol, tariff, locale } = PRICING_MATRIX.currencies[currency];
+
+  const raw     = (baseUSDCents / 100) * multiplier * tariff;
+  const amount  = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(raw);
+
+  return {
+    symbol,
+    amount,
+    period: cycle === 'annual' ? '/mo, billed annually' : '/month',
+    badge,
+  };
+}
+State Isolation Architecture — THE MOST CRITICAL SECTION
+The evaluator will open Chrome DevTools → Performance tab → record while toggling currency and billing cycle. Any component highlighted in the flame graph outside the price <span> elements = immediate point deduction.
+Architecture: Pricing Island Pattern
+jsx// src/components/Pricing.jsx
+// This component is the isolation boundary.
+// It uses useRef for currency/cycle to avoid re-rendering PricingCard siblings.
+
+import { useRef, useCallback } from 'react';
+import { PRICING_MATRIX } from '../data/pricingMatrix';
+import { computePrice } from '../utils/pricingCalc';
+import PricingCard from './ui/PricingCard';
+
+export default function Pricing() {
+  // useRef — NOT useState — so toggling never triggers a re-render of this component
+  const currencyRef = useRef('USD');
+  const cycleRef    = useRef('monthly');
+
+  // Direct DOM writes — bypasses React reconciler entirely
+  const updateAllPrices = useCallback(() => {
+    const currency = currencyRef.current;
+    const cycle    = cycleRef.current;
+
+    Object.keys(PRICING_MATRIX.tiers).forEach((tier) => {
+      const { symbol, amount, period, badge } = computePrice(tier, currency, cycle);
+
+      // Target the exact text nodes — nothing else in the DOM changes
+      const priceEl  = document.getElementById(`price-amount-${tier}`);
+      const symbolEl = document.getElementById(`price-symbol-${tier}`);
+      const periodEl = document.getElementById(`price-period-${tier}`);
+      const badgeEl  = document.getElementById(`price-badge-${tier}`);
+
+      if (priceEl)  priceEl.textContent  = amount;
+      if (symbolEl) symbolEl.textContent = symbol;
+      if (periodEl) periodEl.textContent = period;
+      if (badgeEl) {
+        badgeEl.textContent = badge ?? '';
+        badgeEl.style.opacity = badge ? '1' : '0';
+      }
+    });
+  }, []);
+
+  const handleCycleChange = useCallback((newCycle) => {
+    cycleRef.current = newCycle;
+    // Update toggle UI manually
+    document.getElementById('toggle-monthly')
+      ?.setAttribute('data-active', newCycle === 'monthly');
+    document.getElementById('toggle-annual')
+      ?.setAttribute('data-active', newCycle === 'annual');
+    updateAllPrices();
+  }, [updateAllPrices]);
+
+  const handleCurrencyChange = useCallback((e) => {
+    currencyRef.current = e.target.value;
+    updateAllPrices();
+  }, [updateAllPrices]);
+
+  return (
+    <section id="pricing" aria-labelledby="pricing-heading">
+      {/* Controls */}
+      <div className="pricing-controls">
+        {/* Cycle toggle */}
+        <div role="group" aria-label="Billing cycle">
+          <button id="toggle-monthly" data-active="true"
+            onClick={() => handleCycleChange('monthly')}>Monthly</button>
+          <button id="toggle-annual"  data-active="false"
+            onClick={() => handleCycleChange('annual')}>Annual</button>
+        </div>
+
+        {/* Currency selector */}
+        <select onChange={handleCurrencyChange} aria-label="Select currency"
+          defaultValue="USD">
+          <option value="USD">$ USD</option>
+          <option value="INR">₹ INR</option>
+          <option value="EUR">€ EUR</option>
+        </select>
+      </div>
+
+      {/* Cards — rendered once, never re-rendered */}
+      <div className="pricing-grid">
+        {Object.entries(PRICING_MATRIX.tiers).map(([key, tier]) => {
+          const initial = computePrice(key, 'USD', 'monthly');
+          return (
+            <PricingCard
+              key={key}
+              tierId={key}
+              tier={tier}
+              initialPrice={initial}
+            />
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+jsx// src/components/ui/PricingCard.jsx
+// Wrapped in React.memo — will NEVER re-render after mount
+// Price updates happen via direct DOM writes to the id-tagged spans
+
+import { memo } from 'react';
+
+const PricingCard = memo(({ tierId, tier, initialPrice }) => {
+  return (
+    <article
+      className={`pricing-card ${tier.highlighted ? 'pricing-card--featured' : ''}`}
+      aria-label={`${tier.name} pricing plan`}
+    >
+      {/* Badge — hidden by default, shown via direct DOM opacity write */}
+      <span
+        id={`price-badge-${tierId}`}
+        className="pricing-badge"
+        style={{ opacity: 0, transition: 'opacity 150ms ease-out' }}
+        aria-live="polite"
+      />
+
+      <h3 className="pricing-tier-name">{tier.name}</h3>
+      <p className="pricing-tagline">{tier.tagline}</p>
+
+      <div className="pricing-amount" aria-live="polite" aria-atomic="true">
+        <span id={`price-symbol-${tierId}`}>{initialPrice.symbol}</span>
+        <span id={`price-amount-${tierId}`} className="pricing-figure">
+          {initialPrice.amount}
+        </span>
+        <span id={`price-period-${tierId}`} className="pricing-period">
+          {initialPrice.period}
+        </span>
+      </div>
+
+      <ul aria-label={`${tier.name} features`}>
+        {tier.features.map((f) => (
+          <li key={f}>{f}</li>
+        ))}
+      </ul>
+
+      <a href="#" className="btn-cta" role="button">{tier.cta}</a>
+    </article>
+  );
+});
+
+PricingCard.displayName = 'PricingCard';
+export default PricingCard;
+
+FEATURE 2 — BENTO-TO-ACCORDION WITH CONTEXT LOCK (10 pts)
+The Hook (src/hooks/useBreakpoint.js)
+jsimport { useState, useEffect } from 'react';
+
+const MOBILE_BREAKPOINT = 768;
+
+/**
+ * Uses ResizeObserver on document.body for precision.
+ * Returns boolean — true when viewport < 768px.
+ */
+export function useBreakpoint() {
+  const [isMobile, setIsMobile] = useState(
+    () => window.innerWidth < MOBILE_BREAKPOINT
+  );
+
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setIsMobile(entry.contentRect.width < MOBILE_BREAKPOINT);
+      }
+    });
+    observer.observe(document.body);
+    return () => observer.disconnect();
+  }, []);
+
+  return isMobile;
+}
+The Component (src/components/Features.jsx)
+jsximport { useRef, useState, useEffect, useCallback } from 'react';
+import { useBreakpoint } from '../hooks/useBreakpoint';
+import { FEATURES } from '../data/featuresData';
+
+export default function Features() {
+  // Tracks which bento card is currently hovered/active on desktop
+  const activeIndexRef  = useRef(null);
+
+  // Accordion open index — null means all closed
+  const [accordionOpen, setAccordionOpen] = useState(null);
+
+  const isMobile = useBreakpoint();
+
+  // THE CONTEXT LOCK — transfers desktop hover state to mobile accordion
+  // Only fires when crossing the breakpoint threshold
+  const prevIsMobileRef = useRef(isMobile);
+  useEffect(() => {
+    const crossedToMobile = !prevIsMobileRef.current && isMobile;
+    if (crossedToMobile && activeIndexRef.current !== null) {
+      setAccordionOpen(activeIndexRef.current);
+    }
+    prevIsMobileRef.current = isMobile;
+  }, [isMobile]);
+
+  const handleBentoEnter = useCallback((id) => {
+    activeIndexRef.current = id;
+  }, []);
+
+  const handleBentoLeave = useCallback(() => {
+    // Do NOT clear activeIndexRef — it must persist for the context lock
+  }, []);
+
+  const toggleAccordion = useCallback((id) => {
+    setAccordionOpen((prev) => (prev === id ? null : id));
+  }, []);
+
+  if (isMobile) {
+    return (
+      <section id="features" aria-labelledby="features-heading">
+        <h2 id="features-heading">Everything your data pipeline needs</h2>
+        <div className="accordion">
+          {FEATURES.map((f) => {
+            const isOpen = accordionOpen === f.id;
+            return (
+              <article key={f.id} className="accordion-item">
+                <button
+                  className="accordion-trigger"
+                  onClick={() => toggleAccordion(f.id)}
+                  aria-expanded={isOpen}
+                  aria-controls={`accordion-panel-${f.id}`}
+                  id={`accordion-btn-${f.id}`}
+                >
+                  <span className="accordion-icon">{/* SVG here */}</span>
+                  <span>{f.title}</span>
+                  <span className={`accordion-chevron ${isOpen ? 'open' : ''}`}>
+                    {/* chevron-down.svg */}
+                  </span>
+                </button>
+                <div
+                  id={`accordion-panel-${f.id}`}
+                  role="region"
+                  aria-labelledby={`accordion-btn-${f.id}`}
+                  className={`accordion-panel ${isOpen ? 'accordion-panel--open' : ''}`}
+                >
+                  <p>{f.body}</p>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="features" aria-labelledby="features-heading">
+      <h2 id="features-heading">Everything your data pipeline needs</h2>
+      <div className="bento-grid" role="list">
+        {FEATURES.map((f) => (
+          <article
+            key={f.id}
+            className={`bento-card bento-card--${f.size ?? 'md'}`}
+            role="listitem"
+            onMouseEnter={() => handleBentoEnter(f.id)}
+            onMouseLeave={handleBentoLeave}
+            onFocus={() => handleBentoEnter(f.id)}
+            tabIndex={0}
+          >
+            <span className="bento-icon">{/* SVG */}</span>
+            <h3>{f.title}</h3>
+            <p>{f.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+Accordion CSS (no JS height measurement — CSS-only transition)
+css/* CORRECT — max-height trick, no JS layout reads */
+.accordion-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 350ms ease-in-out, opacity 300ms ease-in-out;
+  opacity: 0;
+}
+
+.accordion-panel--open {
+  max-height: 400px; /* larger than any possible content */
+  opacity: 1;
+}
+
+/* Chevron rotation */
+.accordion-chevron {
+  transition: transform 150ms ease-out;
+}
+.accordion-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* Bento hover — GPU only */
+.bento-card {
+  transition: transform 180ms ease-out, box-shadow 180ms ease-out,
+              border-color 180ms ease-out;
+  will-change: transform;
+}
+.bento-card:hover {
+  transform: scale(1.025) translateZ(0);
+  box-shadow: 0 20px 40px rgba(23,43,54,0.25), 0 0 0 1px var(--clr-forsythia-20);
+  border-color: var(--clr-forsythia-20);
+}
+
+ANIMATION SYSTEM (src/styles/animations.css)
+css/* ─── Entry Keyframes ─── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px var(--clr-forsythia-10); }
+  50%       { box-shadow: 0 0 40px var(--clr-forsythia-20); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Staggered Entry Utility Classes ─── */
+/* Total hero orchestration must be ≤ 500ms */
+.anim-hero-1 { animation: fade-up 300ms ease-out 0ms   both; }
+.anim-hero-2 { animation: fade-up 300ms ease-out 80ms  both; }
+.anim-hero-3 { animation: fade-up 300ms ease-out 160ms both; }
+.anim-hero-4 { animation: fade-up 300ms ease-out 240ms both; }
+/* 240 + 300 = 540ms — hero-5 would breach limit, so cap at 4 stagger levels */
+
+/* ─── Floating Cards (hero dashboard) ─── */
+.float-card-1 { animation: float 4s ease-in-out 0s    infinite; }
+.float-card-2 { animation: float 4s ease-in-out 0.8s  infinite; }
+.float-card-3 { animation: float 4s ease-in-out 1.6s  infinite; }
+
+/* ─── Respect reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+COMPLETE index.html
+html<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <!-- ─── Primary SEO ─── -->
+  <title>Nexus AI — Intelligent Data Automation Platform</title>
+  <meta name="description"
+    content="Nexus AI automates your data pipelines with AI-driven intelligence.
+    Real-time analytics, smart configuration, and enterprise integrations for
+    engineering teams of all sizes." />
+  <meta name="keywords"
+    content="AI automation, data pipeline, real-time analytics, workflow automation,
+    SaaS platform, data engineering, ETL automation" />
+  <meta name="author" content="Nexus AI" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <meta name="theme-color" content="#172B36" />
+
+  <!-- ─── Canonical ─── -->
+  <link rel="canonical" href="https://nexus-ai.vercel.app/" />
+
+  <!-- ─── Open Graph ─── -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:site_name"   content="Nexus AI" />
+  <meta property="og:url"         content="https://nexus-ai.vercel.app/" />
+  <meta property="og:title"       content="Nexus AI — Intelligent Data Automation Platform" />
+  <meta property="og:description" content="Automate the chaos. Ship the future.
+    AI-powered pipelines for modern engineering teams." />
+  <meta property="og:image"       content="https://nexus-ai.vercel.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale"      content="en_US" />
+
+  <!-- ─── Twitter Card ─── -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:site"        content="@nexusai" />
+  <meta name="twitter:title"       content="Nexus AI — Intelligent Data Automation Platform" />
+  <meta name="twitter:description" content="Automate the chaos. Ship the future." />
+  <meta name="twitter:image"       content="https://nexus-ai.vercel.app/og-image.png" />
+
+  <!-- ─── Favicon (inline SVG cube) ─── -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon"    href="/apple-touch-icon.png" />
+
+  <!-- ─── Preconnect (fonts load faster) ─── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- ─── JSON-LD Structured Data (bonus SEO signal) ─── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Nexus AI",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "description": "AI-powered data automation platform for engineering teams.",
+    "url": "https://nexus-ai.vercel.app/",
+    "offers": {
+      "@type": "AggregateOffer",
+      "lowPrice": "29",
+      "highPrice": "199",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>
+
+public/robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://nexus-ai.vercel.app/sitemap.xml
+public/sitemap.xml
+xml<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://nexus-ai.vercel.app/</loc>
+    <lastmod>2026-06-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
+
+PAGE SECTIONS — COMPLETE SPEC
+<Navbar> — sticky, backdrop-blur on scroll
+
+Logo: cube-16-solid.svg + "NEXUS" in JetBrains Mono, --clr-forsythia
+Nav links: Features / Pricing / Integrations / Docs (Inter, --clr-arctic-powder)
+search.svg icon button — opens an inline search bar on click with x-mark.svg to dismiss
+CTA: "Get Started" — --clr-forsythia bg, --clr-oceanic-noir text, 150ms hover scale
+On scroll > 10px: add backdrop-filter: blur(16px) + border-bottom: 1px solid rgba(255,200,1,0.1) via class toggle
+Mobile: hamburger (3 CSS lines) → slide-down nav, x-mark.svg to close, 300ms ease-in-out
+Use useScrollY hook for scroll detection
+aria-label="Main navigation" on <nav>
+
+<Hero> — dark, full-viewport
+
+BG: --clr-oceanic-noir with a radial gradient bleed using --clr-nocturnal-expedition
+Eyebrow: "AI-POWERED AUTOMATION PLATFORM" — JetBrains Mono, --clr-forsythia, letter-spacing 0.15em
+<h1>: "Automate the Chaos. Ship the Future." — clamp hero size, white
+Subheading: "Connect any data source, build intelligent pipelines, and ship features 10x faster — without the infrastructure overhead." — Inter, --clr-mystic-mint
+CTAs: "Start Free Trial" (forsythia filled) + "Watch Demo" (ghost border)
+Floating metric badges using CSS float animation:
+
+arrow-trending-up.svg + "2.3M tasks/day"
+arrow-path.svg + "99.9% uptime"
+chart-pie.svg + "140ms avg latency"
+
+
+Entry: .anim-hero-1 through .anim-hero-4 stagger classes
+One <h1> in the entire document — only here
+
+<TrustedBy> — logo strip
+
+"Trusted by engineering teams at" + 6 company names in Inter
+CSS marquee scroll animation (CSS @keyframes scroll, not a library)
+BG: --clr-nocturnal-expedition
+
+<Features> — Bento ↔ Accordion (Feature 2 — full spec above)
+
+BG: --clr-arctic-powder
+6 cards, asymmetric grid: grid-template-areas named layout
+Desktop: bento with hover glow
+Mobile: accordion with context lock
+
+<WorkflowTimeline> — horizontal → vertical on mobile
+
+"How Nexus Works" heading
+4 steps with arrow-right.svg connectors
+Step numbers in JetBrains Mono, forsythia
+BG: --clr-oceanic-noir
+
+<Pricing> — island, no re-render (Feature 1 — full spec above)
+
+BG: --clr-nocturnal-expedition
+Three cards: Starter / Pro (highlighted) / Enterprise
+Billing toggle + currency dropdown
+
+<Testimonials> — carousel
+
+chevron-left.svg / chevron-right.svg nav
+3 testimonial cards with name, role, company, quote
+BG: --clr-mystic-mint
+
+<FAQ> — accordion (reuse accordion CSS pattern)
+
+6 questions, same CSS accordion pattern as Features
+BG: --clr-arctic-powder
+
+<CTABanner> — full-width gradient
+
+BG: linear-gradient(135deg, #FF9932, #FFC801)
+"Ready to automate everything?" + "Start Free Trial" button
+--clr-oceanic-noir text for contrast
+
+<Footer>
+
+4-column: Logo+desc / Product / Company / Connect
+link.svg on each nav link
+cube-16-solid.svg logo mark
+© {new Date().getFullYear()} Nexus AI. All rights reserved.
+--clr-oceanic-noir bg
+
+<ScrollToTop> — fixed bottom-right
+
+chevron-up-solid.svg
+Appears after scrolling 400px
+150ms fade-in/out
+
+
+SEMANTIC HTML STRUCTURE MAP
+html<body>
+  <header role="banner">          <!-- Navbar -->
+    <nav aria-label="Main navigation">
+  </header>
+
+  <main id="main-content">
+    <section id="hero"         aria-labelledby="hero-heading">
+    <section id="trusted-by"   aria-label="Trusted companies">
+    <section id="features"     aria-labelledby="features-heading">
+    <section id="workflow"     aria-labelledby="workflow-heading">
+    <section id="pricing"      aria-labelledby="pricing-heading">
+    <section id="testimonials" aria-labelledby="testimonials-heading">
+    <section id="faq"          aria-labelledby="faq-heading">
+    <section id="cta-banner"   aria-label="Call to action">
+  </main>
+
+  <footer role="contentinfo">
+    <nav aria-label="Footer navigation">
+  </footer>
+</body>
+Heading hierarchy (enforced):
+<h1> — Hero only (exactly one)
+<h2> — Section titles (Features, Pricing, Testimonials, FAQ, CTA)
+<h3> — Card/item titles (bento cards, pricing tier names, FAQ questions)
+<h4> — Sub-items if needed
+
+GLOBALS CSS (src/styles/globals.css)
+css:root {
+  /* Colors */
+  --clr-oceanic-noir:         #172B36;
+  --clr-nocturnal-expedition: #114C5A;
+  --clr-mystic-mint:          #D9E8E2;
+  --clr-arctic-powder:        #F1F6F4;
+  --clr-forsythia:            #FFC801;
+  --clr-deep-saffron:         #FF9932;
+  --clr-forsythia-10:         rgba(255,200,1,0.10);
+  --clr-forsythia-20:         rgba(255,200,1,0.20);
+
+  /* Typography */
+  --font-display: 'JetBrains Mono', monospace;
+  --font-body:    'Inter', sans-serif;
+
+  /* Fluid type scale */
+  --text-hero: clamp(2.8rem, 6vw, 4rem);
+  --text-5xl:  clamp(2.4rem, 5vw, 3rem);
+  --text-4xl:  clamp(2rem,   4vw, 2.25rem);
+  --text-3xl:  clamp(1.6rem, 3vw, 1.875rem);
+  --text-2xl:  clamp(1.35rem,2.5vw,1.5rem);
+  --text-xl:   clamp(1.15rem,2vw, 1.25rem);
+  --text-lg:   clamp(1.05rem,1.8vw,1.125rem);
+  --text-base: clamp(0.95rem,1.5vw,1rem);
+  --text-sm:   clamp(0.85rem,1.2vw,0.875rem);
+
+  /* Spacing (8px base) */
+  --sp-1: 0.5rem;   /* 8px  */
+  --sp-2: 1rem;     /* 16px */
+  --sp-3: 1.5rem;   /* 24px */
+  --sp-4: 2rem;     /* 32px */
+  --sp-6: 3rem;     /* 48px */
+  --sp-8: 4rem;     /* 64px */
+  --sp-12: 6rem;    /* 96px */
+  --sp-16: 8rem;    /* 128px */
+
+  /* Radii */
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  20px;
+  --radius-xl:  28px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-micro:  150ms ease-out;
+  --transition-fast:   180ms ease-out;
+  --transition-layout: 350ms ease-in-out;
+  --transition-medium: 200ms ease-out;
+
+  /* Max width */
+  --max-w: 1280px;
+}
+
+/* ─── Reset ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+img, svg { display: block; max-width: 100%; }
+button { cursor: pointer; border: none; background: none; font: inherit; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+
+/* ─── Base ─── */
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  background-color: var(--clr-oceanic-noir);
+  color: var(--clr-arctic-powder);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ─── Layout shell ─── */
+.container {
+  width: 100%;
+  max-width: var(--max-w);
+  margin-inline: auto;
+  padding-inline: var(--sp-4);
+}
+
+/* ─── Focus visible (accessibility) ─── */
+:focus-visible {
+  outline: 2px solid var(--clr-forsythia);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+BUILD & DEPLOY COMMANDS
+bash# 1. Scaffold
+npm create vite@latest nexus-ai -- --template react
+cd nexus-ai
+
+# 2. Install (ONLY these — no banned libs)
+npm install
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+
+# 3. Dev
+npm run dev
+
+# 4. Production build
+npm run build
+
+# 5. Deploy to Vercel (one command)
+npx vercel --prod
+
+tailwind.config.js
+js/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{js,jsx}'],
+  theme: {
+    extend: {
+      colors: {
+        'oceanic-noir':         '#172B36',
+        'nocturnal-expedition': '#114C5A',
+        'mystic-mint':          '#D9E8E2',
+        'arctic-powder':        '#F1F6F4',
+        'forsythia':            '#FFC801',
+        'deep-saffron':         '#FF9932',
+      },
+      fontFamily: {
+        display: ['JetBrains Mono', 'monospace'],
+        body:    ['Inter', 'sans-serif'],
+      },
+      maxWidth: { site: '1280px' },
+      animation: {
+        'float':     'float 4s ease-in-out infinite',
+        'spin-slow': 'spin-slow 8s linear infinite',
+        'fade-up':   'fade-up 300ms ease-out both',
+      },
+    },
+  },
+  plugins: [],
+};
+
+BUILD ORDER — FILE BY FILE (follow exactly)
+1.  index.html                        ← SEO complete, fonts, JSON-LD
+2.  public/robots.txt
+3.  public/sitemap.xml
+4.  public/favicon.svg                ← cube-16-solid, recolored forsythia
+5.  tailwind.config.js
+6.  vite.config.js
+7.  src/styles/globals.css            ← all CSS vars, reset
+8.  src/styles/animations.css        ← all @keyframes
+9.  src/assets/svgs/index.js         ← all 14 SVGs as React components
+10. src/data/pricingMatrix.js
+11. src/data/featuresData.js
+12. src/utils/pricingCalc.js          ← pure function, no React
+13. src/hooks/useBreakpoint.js
+14. src/hooks/useScrollY.js
+15. src/components/ui/PricingCard.jsx ← memo-wrapped, id-tagged spans
+16. src/components/Navbar.jsx
+17. src/components/Hero.jsx
+18. src/components/TrustedBy.jsx
+19. src/components/Features.jsx       ← Feature 2, context lock
+20. src/components/WorkflowTimeline.jsx
+21. src/components/Pricing.jsx        ← Feature 1, useRef + DOM writes
+22. src/components/Testimonials.jsx
+23. src/components/FAQ.jsx
+24. src/components/CTABanner.jsx
+25. src/components/Footer.jsx
+26. src/components/ui/ScrollToTop.jsx
+27. src/App.jsx
+28. src/main.jsx
+
+PRE-SUBMISSION VERIFICATION CHECKLIST
+Open Chrome DevTools — Performance tab — record 10 seconds while:
+
+ Toggling Monthly ↔ Annual: only price <span> elements repaint — nothing else
+ Changing currency dropdown: same isolation confirmed
+ Resizing from 900px → 600px with a bento card hovered: accordion opens at same index
+ Hero loads: total animation completes within 500ms of TTI
+
+Lighthouse (run in incognito):
+
+ Performance ≥ 90
+ Accessibility ≥ 95
+ Best Practices ≥ 95
+ SEO = 100
+
+Manual checks:
+
+ All 14 SVGs visible on the page — grep for each filename in JSX
+ Exactly one <h1> — document.querySelectorAll('h1').length === 1
+ Zero console.error or console.warn in production build
+ No horizontal scrollbar at 375px
+ Keyboard tab order is logical throughout
+ All images have alt, all icon buttons have aria-label
+ GitHub repo is public and has actual source code (not placeholder)
+ Vercel deployment returns 200, all assets load
+
+
+WHAT MAKES THIS PROMPT BEAT THE OTHER ONE
+Weakness in v2 promptFixed in this promptNo actual code for state isolationFull useRef + direct DOM write pattern with exact IDsNo accordion CSS providedFull max-height CSS with opacity, exact class namesNo stagger timing mathExplicit ms math proving ≤500ms ceilingNo JSON-LDAdded — bonus SEO signal judges may noticeNo aria-live on price elementsAdded — screen readers announce price changesNo prefers-reduced-motionFull media query includedNo ResizeObserver — used window.resizeResizeObserver on document.body — more preciseprevIsMobileRef missing — context lock fires repeatedlyprevIsMobileRef guards against double-firesNo fluid typographyFull clamp() scale — no breakpoint jumpsSVG usage was vagueNamed placement for every single SVGBuild order not specified28-step exact file orderNo Lighthouse targetsExplicit score targets per category
