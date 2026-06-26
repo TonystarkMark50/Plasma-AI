@@ -10,10 +10,10 @@ export default function Footer() {
     <div className="container py-16 sm:py-20">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
         <div>
-          <a href="#" className="flex items-center gap-2 mb-4" aria-label="Nexus AI home">
+          <a href="#" className="flex items-center gap-2 mb-4" aria-label="Plasma AI home">
             <Cube16Solid className="w-6 h-6 text-forsythia" />
             <span className="font-display text-base font-bold">
-              <span className="text-forsythia">NEXUS</span>
+              <span className="text-forsythia">PLASMA</span>
               <span className="text-arctic-powder">AI</span>
             </span>
           </a>
@@ -21,7 +21,7 @@ export default function Footer() {
             Intelligent data automation platform for modern engineering teams.
           </p>
           <p className="text-xs text-mystic-mint/40">
-            &copy; {new Date().getFullYear()} Nexus AI. All rights reserved.
+            &copy; {new Date().getFullYear()} Plasma AI. All rights reserved.
           </p>
         </div>
 

@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from '../assets/svgs';
 
 const testimonials = [
   {
-    quote: 'Nexus AI transformed our data pipeline from a nightmare into a competitive advantage. We reduced time-to-insight by 87%.',
+    quote: 'Plasma AI transformed our data pipeline from a nightmare into a competitive advantage. We reduced time-to-insight by 87%.',
     name: 'Sarah Chen',
     role: 'VP of Engineering',
     company: 'Vercel',
@@ -17,7 +17,7 @@ const testimonials = [
     stars: 5,
   },
   {
-    quote: 'We evaluated every solution on the market. Nexus AI won on reliability, performance, and sheer developer experience.',
+    quote: 'We evaluated every solution on the market. Plasma AI won on reliability, performance, and sheer developer experience.',
     name: 'Priya Patel',
     role: 'Head of Data',
     company: 'Stripe',

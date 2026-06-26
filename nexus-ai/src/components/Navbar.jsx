@@ -19,10 +19,10 @@ export default function Navbar() {
       }`}
     >
       <nav aria-label="Main navigation" className="container flex items-center justify-between h-16 sm:h-20">
-        <a href="#" className="flex items-center gap-2" aria-label="Nexus AI home">
+        <a href="#" className="flex items-center gap-2" aria-label="Plasma AI home">
           <Cube16Solid className="w-7 h-7 text-forsythia" />
           <span className="font-display text-lg font-bold tracking-tight">
-            <span className="text-forsythia">NEXUS</span>
+            <span className="text-forsythia">PLASMA</span>
             <span className="text-arctic-powder">AI</span>
           </span>
         </a>
@@ -44,7 +44,7 @@ export default function Navbar() {
               <input
                 type="search"
                 placeholder="Search..."
-                aria-label="Search Nexus AI"
+                aria-label="Search Plasma AI"
                 className="w-full bg-transparent border border-forsythia/20 rounded-lg px-3 py-1.5 text-sm text-arctic-powder placeholder-mystic-mint/50 focus:outline-none focus:border-forsythia"
               />
             </div>

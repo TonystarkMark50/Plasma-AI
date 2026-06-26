@@ -16,7 +16,7 @@ export default function CTABanner() {
           Ready to automate everything?
         </h2>
         <p className="text-oceanic-noir/70 mb-10 max-w-xl mx-auto" style={{ fontSize: 'var(--text-lg)' }}>
-          Join thousands of engineering teams already shipping faster with Nexus AI.
+          Join thousands of engineering teams already shipping faster with Plasma AI.
         </p>
         <a href="#pricing" className="btn-dark">
           Start Free Trial

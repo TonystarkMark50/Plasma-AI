@@ -3,12 +3,12 @@ import { ChevronDown } from '../assets/svgs';
 
 const faqs = [
   {
-    q: 'How does Nexus AI handle data security and compliance?',
-    a: 'Nexus AI is SOC 2 Type II certified and fully GDPR compliant. All data is encrypted at rest using AES-256 and in transit using TLS 1.3. We offer dedicated infrastructure for enterprise customers with VPC peering and private networking options.',
+    q: 'How does Plasma AI handle data security and compliance?',
+    a: 'Plasma AI is SOC 2 Type II certified and fully GDPR compliant. All data is encrypted at rest using AES-256 and in transit using TLS 1.3. We offer dedicated infrastructure for enterprise customers with VPC peering and private networking options.',
   },
   {
     q: 'Can I connect my existing databases and tools?',
-    a: 'Absolutely. Nexus AI features 200+ pre-built connectors for databases (PostgreSQL, MySQL, Snowflake, BigQuery), SaaS tools (Slack, Salesforce, HubSpot), and cloud services (AWS, GCP, Azure). Our universal API lets you connect anything custom.',
+    a: 'Absolutely. Plasma AI features 200+ pre-built connectors for databases (PostgreSQL, MySQL, Snowflake, BigQuery), SaaS tools (Slack, Salesforce, HubSpot), and cloud services (AWS, GCP, Azure). Our universal API lets you connect anything custom.',
   },
   {
     q: 'What happens if I exceed my monthly task limit?',
@@ -16,7 +16,7 @@ const faqs = [
   },
   {
     q: 'Is there a free trial available?',
-    a: 'Yes! All plans come with a 14-day free trial, no credit card required. You get full access to all features within your selected plan limits to evaluate Nexus AI risk-free.',
+    a: 'Yes! All plans come with a 14-day free trial, no credit card required. You get full access to all features within your selected plan limits to evaluate Plasma AI risk-free.',
   },
   {
     q: 'How does annual billing work?',

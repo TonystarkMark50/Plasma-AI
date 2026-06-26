@@ -18,7 +18,7 @@ const steps = [
   {
     num: '03',
     title: 'Automate',
-    desc: 'Nexus AI runs, monitors, and self-heals your pipelines continuously.',
+    desc: 'Plasma AI runs, monitors, and self-heals your pipelines continuously.',
     Icon: ArrowPath,
   },
   {
