@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState, useEffect } from 'react';
+import React, { Suspense, lazy } from 'react';
 import Navbar from './components/Navbar';
 import TrustedBy from './components/TrustedBy';
 import Features from './components/Features';
@@ -10,23 +10,18 @@ import CTABanner from './components/CTABanner';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ui/ScrollToTop';
 
-const HeroScene = lazy(() => import('./components/Hero'));
+const Hero = lazy(() => import('./components/Hero'));
 
 export default function App() {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
     <>
-      <Navbar />
+      <header role="banner">
+        <Navbar />
+      </header>
+
       <main id="main-content">
         <Suspense fallback={<div className="min-h-screen bg-oceanic-noir" />}>
-          <HeroScene />
+          <Hero />
         </Suspense>
         <TrustedBy />
         <Features />
@@ -36,8 +31,12 @@ export default function App() {
         <FAQ />
         <CTABanner />
       </main>
-      <Footer />
-      <ScrollToTop visible={scrollY > 400} />
+
+      <footer role="contentinfo" className="bg-oceanic-noir border-t border-forsythia/10">
+        <Footer />
+      </footer>
+
+      <ScrollToTop />
     </>
   );
 }
